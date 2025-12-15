@@ -32,14 +32,12 @@ class BancoDeDados:
 
         return user
 
-    def salvarUsuario(self, nome: str, email: str, senha: str)->Usuario:
+    def salvarUsuario(self, nome: str, email: str, senha: str, id: str)->Usuario:
         if self.buscarPorEmail(email):
             raise ValueError("Usuário com esse email já existe")
 
-        novo_id = self._next_id()
-
         novo_registro = {
-            "id": novo_id,
+            "id": id,
             "nome": nome,
             "email": email,
             "senha": senha
@@ -52,18 +50,15 @@ class BancoDeDados:
 
         self._write_csv()
 
-        user = Usuario(novo_id)
+        user = Usuario(id)
         user.atualizaSenha(senha)
         user.setEmail(email)
         user.setNome(nome)
+        
         return user
     
 # Métodos Privados -----------------------------------------------------------------
     def _write_csv(self):
         self.df.to_csv(self.caminho, index=False)
 
-    def _next_id(self):
-        if self.df.empty:
-            return 1
-        return int(self.df["id"].max()) + 1
 

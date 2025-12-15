@@ -55,7 +55,8 @@ class ControleDeAcessos:
                     case 1:
                         print("\nSessão iniciada com sucesso\n")
                         self.email.send_mail("Sessão iniciada com sucesso")
-                        self.user.logged = True
+                        self.user.setLogged(True)
+                        return
 
             if(option == 2):
                 nome:str = str(input("Insira o nome: "))
@@ -66,7 +67,7 @@ class ControleDeAcessos:
                 self.user.setEmail(mail)
                 self.user.atualizaSenha(senha)
 
-                result:int = self.cadastrarUsuario(nome,mail,senha)
+                result:int = self.cadastrarUsuario(nome,mail,senha,self.user.getId())
                 signing_error_message:str = "Digite 2 e tente se cadastrar novamente\n"
                 match result:
                     case -1:
@@ -75,7 +76,8 @@ class ControleDeAcessos:
                     case 1:
                         print("Usuário cadastrado com sucesso! Sessão iniciada\n")
                         self.email.send_mail("Conta cadastrada com sucesso")
-                        self.user.logged = True
+                        self.user.setLogged(True)
+                        return
 
             if(option == 3):
                 return
@@ -95,14 +97,14 @@ class ControleDeAcessos:
         
         return(self.iniciarSessao())
             
-    def cadastrarUsuario(self, nome:str, email:str, senha:str):
+    def cadastrarUsuario(self, nome:str, email:str, senha:str, id:int):
         usr = self.bd.buscarPorEmail(email)
         if usr is not None:
             return (-1) #email já cadastrado
         
         password:str = self.__encriptarSenha(senha)
 
-        self.bd.salvarUsuario(nome, email, password)
+        self.bd.salvarUsuario(nome, email, password, id)
 
         return(self.iniciarSessao())
 
