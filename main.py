@@ -2,7 +2,13 @@ from Interface import ControleDeAcessos
 
 def main():
     controller = ControleDeAcessos()
-    controller.interfaceInicial()
+
+    while(True):
+        exit = controller.interfaceInicial()
+        if(exit):
+            return
+        
+        controller.areaUsuario()
 
     print("Sistema fechado com sucesso\n")
 

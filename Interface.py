@@ -19,9 +19,9 @@ class ControleDeAcessos:
 # Métodos Públicos ----------------------------------------------------------------
     # Interface com o usuário
     def interfaceInicial(self):
-        print("Bem vindo ao Sistema Usuário\n")
+        print("Para entrar no sistema é necessário se identificar\n")
         
-        while(True):
+        while(not self.user.isLogged()):
             print("Escolha uma opção: ")
             print("Digite 1 para Login")
             print("Digite 2 para Cadastro")
@@ -50,13 +50,11 @@ class ControleDeAcessos:
                         print("\nEmail não cadastrado\n")
                         print(login_error_message)
                     case -2:
-                        print("\nSua senha está errada\n")
+                        print("\nSenha incorreta\n")
                         print(login_error_message)
                     case 1:
+                        self.email.enviarEmail("Sessão iniciada com sucesso")
                         print("\nSessão iniciada com sucesso\n")
-                        self.email.send_mail("Sessão iniciada com sucesso")
-                        self.user.setLogged(True)
-                        return
 
             if(option == 2):
                 nome:str = str(input("Insira o nome: "))
@@ -74,23 +72,45 @@ class ControleDeAcessos:
                         print("\nEmail já cadastrado\n")
                         print(signing_error_message)
                     case 1:
+                        self.email.enviarEmail("Conta cadastrada com sucesso")
                         print("Usuário cadastrado com sucesso! Sessão iniciada\n")
-                        self.email.send_mail("Conta cadastrada com sucesso")
-                        self.user.setLogged(True)
-                        return
 
             if(option == 3):
-                return
+                return True
 
+    def areaUsuario(self):
+        if(self.user.isLogged()):
+            print("\n\nBem vindo a área privada\n")
+        
+        while(self.user.isLogged()):
+            print("Digite 0 para Logout")
+
+            try: 
+                option = int(input())
+            except: 
+                print("Digite números!\n")
+                continue
+
+            if option is not 0:
+                print("Opção inválida! Tente novamente \n")
+
+            if(option == 0):
+                self.encerrarSessao()
+               
     def iniciarSessao(self):
         print("\nSessão Iniciada\n")
+        self.user.setLogged(True)
+        return True
+
+    def encerrarSessao(self):
+        print("\nSessão encerrada com sucesso\n")
+        self.user.setLogged(False)
         return True
 
     def fazerLogin(self, email: str, senha: str):
         usr = self.bd.buscarPorEmail(email)
-
         if(usr == None):
-            return(-1) #email não correspondeu a nada
+            return(-1) #email não cadastrado
 
         if (self.__encriptarSenha(usr.getSenha()) != senha):
             return(-2) #senha errada
